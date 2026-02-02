@@ -1,161 +1,254 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Love Test ❤️</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #6a5acd, #836fff);
-      padding: 30px;
-    }
-    .card {
-      background: #fff;
-      border-radius: 16px;
-      max-width: 420px;
-      margin: auto;
-      padding: 20px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    }
-    .score {
-      text-align: center;
-      font-weight: bold;
-      color: #6a5acd;
-      margin-bottom: 10px;
-    }
-    h3 {
-      text-align: center;
-    }
-    .option {
-      border: 2px solid #c7c7ff;
-      border-radius: 12px;
-      padding: 12px;
-      margin: 10px 0;
-      cursor: pointer;
-      text-align: center;
-    }
-    .option.selected {
-      background: #6a5acd;
-      color: white;
-    }
-    #message {
-      text-align: center;
-      margin-top: 10px;
-      font-weight: bold;
-      font-size: 18px;
-    }
-    button {
-      width: 100%;
-      padding: 12px;
-      background: #ff4d6d;
-      border: none;
-      border-radius: 20px;
-      color: white;
-      font-size: 16px;
-      margin-top: 15px;
-      cursor: pointer;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Love Test ❤️</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #6a5acd, #836fff);
+  padding: 20px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 16px;
+  max-width: 420px;
+  margin: auto;
+  padding: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  text-align: center;
+  animation: fadeIn 0.6s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.score {
+  font-weight: bold;
+  color: #6a5acd;
+  margin-bottom: 10px;
+}
+
+.option {
+  border: 2px solid #c7c7ff;
+  border-radius: 12px;
+  padding: 14px;
+  margin: 10px 0;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.option.selected {
+  background: #6a5acd;
+  color: white;
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  background: #ff4d6d;
+  border: none;
+  border-radius: 20px;
+  color: white;
+  font-size: 16px;
+  margin-top: 15px;
+  cursor: pointer;
+}
+
+button:disabled {
+  background: #ffc1cc;
+  cursor: not-allowed;
+}
+
+#message {
+  font-weight: bold;
+  margin-top: 10px;
+  font-size: 18px;
+}
+
+/* Shake */
+.shake {
+  animation: shake 0.4s;
+}
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  50% { transform: translateX(6px); }
+  75% { transform: translateX(-6px); }
+  100% { transform: translateX(0); }
+}
+
+/* Floating heart */
+.heart {
+  position: fixed;
+  font-size: 28px;
+  animation: floatUp 1.2s ease-out forwards;
+}
+@keyframes floatUp {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-120px); }
+}
+
+/* Mobile tweaks */
+@media (max-width: 480px) {
+  .card { padding: 16px; }
+  h2 { font-size: 20px; }
+  .option { font-size: 15px; }
+}
+</style>
 </head>
+
 <body>
 
-<div class="card">
-  <div class="score" id="score">Score : 0/3</div>
-  <h3 id="question"></h3>
-  <div id="options"></div>
-  <div id="message"></div>
-  <button onclick="nextQuestion()">Next</button>
+<!-- Background Music -->
+<audio id="bgMusic" loop>
+  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_4c8b2b2c2f.mp3" type="audio/mpeg">
+</audio>
+
+<div class="card" id="card">
+
+  <!-- START SCREEN -->
+  <div id="startScreen">
+    <h2>💖 Welcome My Love 💖</h2>
+    <p>
+      A little quiz made just for you 🥰<br>
+      Answer honestly… your heart is being tested 😘
+    </p>
+    <button onclick="startQuiz()">Start Quiz ❤️</button>
+  </div>
+
+  <!-- QUIZ SCREEN -->
+  <div id="quizScreen" style="display:none;">
+    <div class="score" id="score"></div>
+    <h3 id="question"></h3>
+    <div id="options"></div>
+    <div id="message"></div>
+    <button id="nextBtn" onclick="nextQuestion()" disabled>Next</button>
+  </div>
+
 </div>
 
 <script>
-  const quiz = [
-    {
-      question: "When did we first see each other? 💕",
-      options: ["Nov 09", "Nov 11", "Nov 17", "I don't remember 🫣"],
-      correct: 1
-    },
-    {
-      question: "Which colour did I wear when we first met? 💕",
-      options: ["Red", "Blue", "Orange", "I don't remember 🫣"],
-      correct: 1
-    },
-    {
-      question: "When did we meet for the second time? 😜",
-      options: ["Nov 15", "Nov 17", "Nov 18", "Nov 16"],
-      correct: 1
-    },
-    {
-      question: "? ❤️",
-      options: ["You", "Me", "Both equally", "Impossible to measure 😌"],
-      correct: 3
-    }
-  ];
-
-  let current = 0;
-  let score = 0;
-  let selected = null;
-
-  function loadQuestion() {
-    selected = null;
-    document.getElementById("question").innerText = quiz[current].question;
-    document.getElementById("options").innerHTML = "";
-    document.getElementById("message").innerText = "";
-
-    quiz[current].options.forEach((opt, index) => {
-      const div = document.createElement("div");
-      div.className = "option";
-      div.innerText = opt;
-      div.onclick = () => selectOption(div, index);
-      document.getElementById("options").appendChild(div);
-    });
-
-    document.getElementById("score").innerText =
-      `Score : ${score}/${quiz.length}`;
+const quiz = [
+  {
+    question: "When did we first see each other? 💕",
+    options: ["Nov 09", "Nov 11", "Nov 17", "I don't remember 🫣"],
+    correct: 1
+  },
+  {
+    question: "Which colour did I wear when we first met? 💕",
+    options: ["Red", "Blue", "Orange", "I don't remember 🫣"],
+    correct: 1
+  },
+  {
+    question: "When did we meet for the second time? 😜",
+    options: ["Nov 15", "Nov 17", "Nov 18", "Nov 16"],
+    correct: 1
+  },
+  {
+    question: "Who loves the other more? ❤️",
+    options: ["You", "Me", "Both equally", "Impossible to measure 😌"],
+    correct: 3
   }
+];
 
-  function selectOption(element, index) {
-    document.querySelectorAll(".option").forEach(o =>
-      o.classList.remove("selected")
-    );
-    element.classList.add("selected");
-    selected = index;
-  }
+let current = 0;
+let score = 0;
+let selected = null;
 
-  function nextQuestion() {
-    if (selected === null) {
-      alert("Pick an answer first 😄");
-      return;
-    }
-
-    const messageDiv = document.getElementById("message");
-
-    if (selected === quiz[current].correct) {
-      score++;
-      messageDiv.innerText = "❤️ Correct!";
-      messageDiv.style.color = "green";
-    } else {
-      messageDiv.innerText = "💔 You're dead.";
-      messageDiv.style.color = "red";
-    }
-
-    setTimeout(() => {
-      current++;
-
-      if (current < quiz.length) {
-        loadQuestion();
-      } else {
-        document.querySelector(".card").innerHTML = `
-          <h2 style="text-align:center;">🎉 Test Completed 🎉</h2>
-          <p style="text-align:center;">
-            You scored <b>${score}/${quiz.length}</b> ❤️<br><br>
-            No matter the score… I love you endlessly 💖
-          </p>
-        `;
-      }
-    }, 1000);
-  }
-
+function startQuiz() {
+  document.getElementById("startScreen").style.display = "none";
+  document.getElementById("quizScreen").style.display = "block";
+  document.getElementById("bgMusic").play();
   loadQuestion();
+}
+
+function loadQuestion() {
+  selected = null;
+  document.getElementById("question").innerText = quiz[current].question;
+  document.getElementById("options").innerHTML = "";
+  document.getElementById("message").innerText = "";
+  document.getElementById("nextBtn").disabled = true;
+
+  quiz[current].options.forEach((opt, index) => {
+    const div = document.createElement("div");
+    div.className = "option";
+    div.innerText = opt;
+    div.onclick = () => selectOption(div, index);
+    document.getElementById("options").appendChild(div);
+  });
+
+  document.getElementById("score").innerText =
+    `Score : ${score}/${quiz.length}`;
+}
+
+function selectOption(el, index) {
+  document.querySelectorAll(".option").forEach(o =>
+    o.classList.remove("selected")
+  );
+  el.classList.add("selected");
+  selected = index;
+  document.getElementById("nextBtn").disabled = false;
+}
+
+function nextQuestion() {
+  const message = document.getElementById("message");
+  const card = document.getElementById("card");
+
+  if (selected === quiz[current].correct) {
+    score++;
+    message.innerText = "❤️ Correct!";
+    message.style.color = "green";
+    createHeart();
+  } else {
+    message.innerText = "💔 Wrong answer!";
+    message.style.color = "red";
+    card.classList.add("shake");
+    setTimeout(() => card.classList.remove("shake"), 400);
+  }
+
+  setTimeout(() => {
+    current++;
+    if (current < quiz.length) {
+      loadQuestion();
+    } else {
+      showResult();
+    }
+  }, 1200);
+}
+
+function showResult() {
+  let secret = "";
+  if (score === quiz.length) {
+    secret = `
+      <p style="margin-top:15px; color:#ff4d6d;">
+        🎁 <b>Secret Message Unlocked</b> 🎁<br>
+        You know us perfectly… and I choose you every single day 💖🥹
+      </p>
+    `;
+  }
+
+  document.getElementById("card").innerHTML = `
+    <h2>🎉 Test Completed 🎉</h2>
+    <p>You scored <b>${score}/${quiz.length}</b> ❤️</p>
+    ${secret}
+    <button onclick="location.reload()">Restart Quiz 🔁</button>
+  `;
+}
+
+function createHeart() {
+  const heart = document.createElement("div");
+  heart.className = "heart";
+  heart.innerText = "❤️";
+  heart.style.left = Math.random() * window.innerWidth + "px";
+  heart.style.bottom = "20px";
+  document.body.appendChild(heart);
+  setTimeout(() => heart.remove(), 1200);
+}
 </script>
 
 </body>

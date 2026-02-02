@@ -8,7 +8,6 @@
       font-family: Arial, sans-serif;
       background: linear-gradient(135deg, #6a5acd, #836fff);
       padding: 30px;
-      color: #333;
     }
     .card {
       background: #fff;
@@ -34,10 +33,6 @@
       margin: 10px 0;
       cursor: pointer;
       text-align: center;
-      transition: 0.2s;
-    }
-    .option:hover {
-      background: #f0f0ff;
     }
     .option.selected {
       background: #6a5acd;
@@ -58,47 +53,93 @@
 </head>
 <body>
 
-  <div class="card">
-    <div class="score">Score : 0/4</div>
+<div class="card">
+  <div class="score" id="score">Score : 0/3</div>
+  <h3 id="question"></h3>
+  <div id="options"></div>
+  <button onclick="nextQuestion()">Next</button>
+</div>
 
-    <h3>When did I first fall for you? 💕</h3>
+<script>
+  const quiz = [
+    {
+      question: "When did I first fall for you? 💕",
+      options: ["Nov 09", "Nov 11", "Nov 17", "I don't remember 🫣"],
+      correct: 1
+    },
+	{
+      question: "Which colour did I wear when we first met? 💕",
+      options: ["Red", "Blue", "Orange", "I don't remember 🫣"],
+      correct: 1
+    },
+    {
+      question: "Who says sorry first after a fight? 😜",
+      options: ["Ranjith", "Bhavana", "Both", "No one 😅"],
+      correct: 3
+    },
+    {
+      question: "Who loves the other more? ❤️",
+      options: ["You", "Me", "Both equally", "Impossible to measure 😌"],
+      correct: 3
+    }
+  ];
 
-    <div class="option" onclick="selectAnswer(this, 'wrong')">Jan 29</div>
-    <div class="option" onclick="selectAnswer(this, 'correct')">Feb 12</div>
-    <div class="option" onclick="selectAnswer(this, 'wrong')">Jan 28</div>
-    <div class="option" onclick="selectAnswer(this, 'wrong')">I don't remember 🫣</div>
+  let current = 0;
+  let score = 0;
+  let selected = null;
 
-    <button onclick="submitAnswer()">Submit</button>
+  function loadQuestion() {
+    selected = null;
+    document.getElementById("question").innerText = quiz[current].question;
+    document.getElementById("options").innerHTML = "";
 
-    <p id="result" style="text-align:center; margin-top:15px; font-weight:bold;"></p>
-  </div>
+    quiz[current].options.forEach((opt, index) => {
+      const div = document.createElement("div");
+      div.className = "option";
+      div.innerText = opt;
+      div.onclick = () => selectOption(div, index);
+      document.getElementById("options").appendChild(div);
+    });
 
-  <script>
-    let selected = null;
-    let isCorrect = false;
+    document.getElementById("score").innerText =
+      `Score : ${score}/${quiz.length}`;
+  }
 
-    function selectAnswer(element, answer) {
-      document.querySelectorAll('.option').forEach(opt =>
-        opt.classList.remove('selected')
-      );
-      element.classList.add('selected');
-      selected = true;
-      isCorrect = (answer === 'correct');
+  function selectOption(element, index) {
+    document.querySelectorAll(".option").forEach(o =>
+      o.classList.remove("selected")
+    );
+    element.classList.add("selected");
+    selected = index;
+  }
+
+  function nextQuestion() {
+    if (selected === null) {
+      alert("Pick an answer first 😄");
+      return;
     }
 
-    function submitAnswer() {
-      const result = document.getElementById("result");
-      if (!selected) {
-        result.innerHTML = "Pick an answer first 😄";
-        return;
-      }
-      if (isCorrect) {
-        result.innerHTML = "💖 Correct! You know me so well 💖";
-      } else {
-        result.innerHTML = "😜 Wrong… but I still love you ❤️";
-      }
+    if (selected === quiz[current].correct) {
+      score++;
     }
-  </script>
+
+    current++;
+
+    if (current < quiz.length) {
+      loadQuestion();
+    } else {
+      document.querySelector(".card").innerHTML = `
+        <h2 style="text-align:center;">🎉 Test Completed 🎉</h2>
+        <p style="text-align:center;">
+          You scored <b>${score}/${quiz.length}</b> ❤️<br><br>
+          No matter the score… I love you endlessly 💖
+        </p>
+      `;
+    }
+  }
+
+  loadQuestion();
+</script>
 
 </body>
 </html>

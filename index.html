@@ -155,12 +155,12 @@ const quiz = [
     question: "When did I come to the USA? ❤️",
     options: ["Feb 14", "Feb 17", "Feb 19", "I don't remember 🫣"],
     correct: 1
-  }
+  },
   {
     question: "What is my love language? ❤️",
     options: ["Words of affirmation", "Quality time", "Gifts", "Acts of service", "I don't remember 🫣"],
     correct: 1
-  }
+  },
   {
     question: "What was the first gift you gave me? 🎁",
     options: ["Flowers 🌸", "Chain", "Chocolate 🍫", "Perfume", "I don't remember 🫣"],
@@ -225,11 +225,10 @@ function nextQuestion() {
 
   setTimeout(() => {
     answersLog.push(
-  `Q${current + 1}: ${quiz[current].question}
-Answer: ${quiz[current].options[selected]}`
-);
+      `Q${current + 1}: ${quiz[current].question}\nAnswer: ${quiz[current].options[selected]}`
+    );
 
-	current++;
+    current++;
     if (current < quiz.length) {
       loadQuestion();
     } else {
@@ -260,7 +259,6 @@ function showResult() {
     <button onclick="location.reload()">Restart Quiz 🔁</button>
   `;
 }
-
 
 function createHeart() {
   const heart = document.createElement("div");

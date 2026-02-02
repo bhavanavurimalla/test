@@ -133,6 +133,8 @@ button:disabled {
 </div>
 
 <script>
+let answersLog = [];
+
 const quiz = [
   {
     question: "When did we meet for the second time? 💕",
@@ -222,7 +224,12 @@ function nextQuestion() {
   }
 
   setTimeout(() => {
-    current++;
+    answersLog.push(
+  `Q${current + 1}: ${quiz[current].question}
+Answer: ${quiz[current].options[selected]}`
+);
+
+	current++;
     if (current < quiz.length) {
       loadQuestion();
     } else {
@@ -232,23 +239,28 @@ function nextQuestion() {
 }
 
 function showResult() {
-  let secret = "";
-  if (score === quiz.length) {
-    secret = `
-      <p style="margin-top:15px; color:#ff4d6d;">
-        🎁 <b>Secret Message Unlocked</b> 🎁<br>
-        You know us perfectly… and I choose you every single day 💖🥹
-      </p>
-    `;
-  }
+  const email = "your_email@gmail.com"; // 🔴 CHANGE THIS
+  const subject = "💖 Love Quiz Answers 💖";
+
+  const body =
+    `Quiz Completed!\n\nScore: ${score}/${quiz.length}\n\n` +
+    answersLog.join("\n\n");
+
+  const mailtoLink =
+    `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 
   document.getElementById("card").innerHTML = `
     <h2>🎉 Test Completed 🎉</h2>
     <p>You scored <b>${score}/${quiz.length}</b> ❤️</p>
-    ${secret}
+    <p>Send your answers to me 💌</p>
+    <button onclick="window.location.href='${mailtoLink}'">
+      Send Answers 📩
+    </button>
+    <br><br>
     <button onclick="location.reload()">Restart Quiz 🔁</button>
   `;
 }
+
 
 function createHeart() {
   const heart = document.createElement("div");
